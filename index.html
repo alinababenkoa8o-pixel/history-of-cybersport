@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>КІБЕРСПОРТ — Червона Зона</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow+Condensed:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:     #0a0000;
+    --bg2:    #110000;
+    --bg3:    #1a0000;
+    --red:    #e8000a;
+    --red2:   #ff3340;
+    --red3:   #ff6670;
+    --dark:   #2a0005;
+    --border: rgba(232,0,10,0.2);
+    --text:   #f0e0e0;
+    --muted:  #8a5555;
+    --card:   rgba(232,0,10,0.04);
+    --white:  #ffffff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+  body::after {
+    content:'';
+    position:fixed; inset:0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none; z-index:9998; opacity:0.4;
+  }
+
+  /* NAV */
+  nav {
+    position:fixed; top:0; width:100%;
+    background: rgba(10,0,0,0.97);
+    border-bottom: 2px solid var(--red);
+    z-index:1000; padding: 0 1.5rem;
+  }
+  .nav-inner {
+    max-width:1200px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    height:58px;
+  }
+  .logo {
+    font-family:'Black Ops One', sans-serif;
+    font-size:1.2rem; color: var(--white);
+    letter-spacing:4px; text-transform:uppercase; flex-shrink:0;
+  }
+  .logo span { color: var(--red); }
+  .logo em {
+    display:inline-block; width:6px; height:6px;
+    background: var(--red); border-radius:50%;
+    margin: 0 5px 2px; box-shadow: 0 0 8px var(--red); vertical-align:middle;
+  }
+  .nav-links { display:flex; gap:0; flex-wrap:wrap; }
+  .nav-links a {
+    color: var(--muted); text-decoration:none;
+    font-size:0.78rem; font-weight:700; letter-spacing:1.5px;
+    text-transform:uppercase; padding: 0.4rem 0.75rem;
+    transition: all 0.25s; border-bottom: 3px solid transparent; cursor:pointer;
+  }
+  .nav-links a:hover, .nav-links a.active { color:var(--red2); border-bottom-color:var(--red); }
+
+  /* PAGES */
+  .page { display:none; min-height:100vh; padding-top:58px; }
+  .page.active { display:block; }
+
+  /* HERO */
+  .hero {
+    min-height:calc(100vh - 58px);
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:center; text-align:center;
+    position:relative; overflow:hidden; padding:2rem;
+  }
+  .hero-bg {
+    position:absolute; inset:0;
+    background: radial-gradient(ellipse 70% 60% at 50% 110%,rgba(232,0,10,0.25) 0%,transparent 65%),
+                radial-gradient(ellipse 40% 40% at 10% 10%,rgba(180,0,5,0.12) 0%,transparent 60%);
+  }
+  .hero-stripes {
+    position:absolute; inset:0;
+    background: repeating-linear-gradient(-55deg,transparent,transparent 40px,rgba(232,0,10,0.025) 40px,rgba(232,0,10,0.025) 41px);
+  }
+  .hero-deco {
+    position:absolute; font-family:'Black Ops One',sans-serif;
+    font-size:clamp(8rem,20vw,18rem); color:rgba(232,0,10,0.04);
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    white-space:nowrap; letter-spacing:-5px; pointer-events:none; user-select:none;
+  }
+  .hero-tag {
+    position:relative; display:inline-flex; align-items:center; gap:8px;
+    font-size:0.75rem; letter-spacing:5px; text-transform:uppercase;
+    color:var(--red3); margin-bottom:1.5rem; animation:fadeIn 0.6s ease both;
+  }
+  .hero-tag::before,.hero-tag::after { content:''; flex:1; height:1px; width:40px; background:linear-gradient(90deg,transparent,var(--red)); }
+  .hero-tag::after { background:linear-gradient(90deg,var(--red),transparent); }
+  .hero h1 {
+    font-family:'Black Ops One', sans-serif;
+    font-size:clamp(4rem,12vw,9rem); line-height:0.88;
+    letter-spacing:-2px; position:relative; animation:fadeIn 0.6s 0.15s ease both;
+  }
+  .hero h1 .line1 { display:block; color:var(--white); }
+  .hero h1 .line2 { display:block; color:var(--red); -webkit-text-stroke:2px var(--red); text-shadow:0 0 60px rgba(232,0,10,0.5); }
+  .hero h1 .line3 { display:block; color:transparent; -webkit-text-stroke:1px rgba(232,0,10,0.4); font-size:0.55em; letter-spacing:8px; }
+  .hero-sub {
+    font-size:1.1rem; font-weight:400; letter-spacing:1px;
+    color:var(--muted); max-width:580px; margin:1.8rem auto; line-height:1.6;
+    position:relative; animation:fadeIn 0.6s 0.3s ease both;
+  }
+  .hero-sub strong { color:var(--text); font-weight:600; }
+  .hero-stats {
+    display:flex; gap:0; position:relative; margin:1.5rem 0;
+    border:1px solid var(--border); animation:fadeIn 0.6s 0.45s ease both;
+  }
+  .hero-stat { padding:1.2rem 2rem; border-right:1px solid var(--border); text-align:center; }
+  .hero-stat:last-child { border-right:none; }
+  .hero-stat .num { font-family:'Black Ops One',sans-serif; font-size:2rem; color:var(--red); display:block; text-shadow:0 0 20px rgba(232,0,10,0.4); }
+  .hero-stat .lbl { font-size:0.65rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
+  .hero-cta { display:flex; gap:1rem; position:relative; animation:fadeIn 0.6s 0.6s ease both; flex-wrap:wrap; justify-content:center; }
+  .btn {
+    padding:0.85rem 2.2rem; font-family:'Black Ops One',sans-serif;
+    font-size:0.82rem; letter-spacing:3px; text-transform:uppercase;
+    border:none; cursor:pointer; text-decoration:none; display:inline-block;
+    transition:all 0.25s; clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+  }
+  .btn-red { background:var(--red); color:var(--white); }
+  .btn-red:hover { background:var(--red2); transform:translateY(-2px); box-shadow:0 8px 30px rgba(232,0,10,0.4); }
+  .btn-ghost { background:transparent; color:var(--red); border:1px solid var(--red); clip-path:none; }
+  .btn-ghost:hover { background:rgba(232,0,10,0.08); transform:translateY(-2px); }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+
+  /* SECTIONS */
+  .section { max-width:1100px; margin:0 auto; padding:5rem 2rem; }
+  .s-tag {
+    font-size:0.7rem; letter-spacing:5px; text-transform:uppercase;
+    color:var(--red); margin-bottom:0.6rem; display:flex; align-items:center; gap:8px;
+  }
+  .s-tag::before { content:''; display:inline-block; width:20px; height:2px; background:var(--red); }
+  .s-title { font-family:'Black Ops One',sans-serif; font-size:clamp(2rem,5vw,3.5rem); line-height:1; margin-bottom:1rem; letter-spacing:-1px; }
+  .s-title span { color:var(--red); }
+  .s-rule { width:50px; height:3px; background:var(--red); margin-bottom:2.5rem; }
+
+  /* WHAT IS ESPORT BOXES */
+  .info-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1.2rem; margin:2rem 0; }
+  .info-card {
+    background:var(--card); border:1px solid var(--border); border-left:3px solid var(--red);
+    padding:1.5rem 1.8rem; transition:all 0.3s;
+  }
+  .info-card:hover { background:rgba(232,0,10,0.07); transform:translateX(4px); }
+  .info-card-icon { font-size:2rem; margin-bottom:0.8rem; }
+  .info-card-title { font-family:'Black Ops One',sans-serif; font-size:0.95rem; color:var(--red2); margin-bottom:0.6rem; letter-spacing:1px; }
+  .info-card-text { color:var(--muted); line-height:1.7; font-size:0.9rem; }
+  .info-card-text strong { color:var(--text); }
+
+  /* DISCIPLINES TABLE */
+  .tbl-wrap { overflow-x:auto; margin:2rem 0; }
+  table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+  thead th {
+    background:var(--red); color:var(--white);
+    font-family:'Black Ops One',sans-serif; font-size:0.78rem;
+    letter-spacing:2px; padding:0.9rem 1rem; text-align:left; white-space:nowrap;
+  }
+  tbody tr { border-bottom:1px solid var(--border); transition:background 0.2s; }
+  tbody tr:hover { background:rgba(232,0,10,0.07); }
+  tbody td { padding:0.85rem 1rem; color:var(--text); vertical-align:middle; }
+  tbody td:first-child { color:var(--red2); font-weight:700; font-size:0.95rem; }
+  .tag-badge {
+    display:inline-block; padding:0.15rem 0.55rem;
+    border:1px solid rgba(232,0,10,0.35); color:var(--red3);
+    font-size:0.72rem; letter-spacing:1px;
+  }
+
+  /* VIDEO SECTION */
+  .video-section {
+    background:rgba(232,0,10,0.03); border:1px solid var(--border);
+    border-top:3px solid var(--red); padding:2.5rem; margin:2.5rem 0;
+  }
+  .video-section-title { font-family:'Black Ops One',sans-serif; font-size:1.1rem; color:var(--white); margin-bottom:0.4rem; }
+  .video-section-sub { color:var(--muted); font-size:0.85rem; margin-bottom:1.5rem; }
+  .video-wrapper {
+    position:relative; width:100%; padding-bottom:56.25%; /* 16:9 */
+    background:#000; border:2px solid var(--border);
+    overflow:hidden; margin-bottom:1.2rem;
+  }
+  .video-wrapper iframe {
+    position:absolute; top:0; left:0; width:100%; height:100%; border:none;
+  }
+  .video-controls {
+    display:flex; align-items:flex-start; gap:1.5rem; flex-wrap:wrap;
+  }
+  .video-url-group { flex:1; min-width:240px; }
+  .video-url-label { font-size:0.72rem; letter-spacing:2px; text-transform:uppercase; color:var(--red); margin-bottom:0.4rem; display:block; }
+  .video-url-input {
+    width:100%; background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    color:var(--text); padding:0.7rem 1rem; font-family:'Barlow Condensed',sans-serif;
+    font-size:0.9rem; transition:border 0.2s; margin-bottom:0.6rem;
+  }
+  .video-url-input:focus { outline:none; border-color:var(--red); }
+  .video-url-input::placeholder { color:var(--muted); }
+  .video-hint { font-size:0.75rem; color:var(--muted); margin-top:0.3rem; line-height:1.5; }
+  .video-load-btn {
+    padding:0.7rem 1.8rem; background:var(--red); color:#fff;
+    font-family:'Black Ops One',sans-serif; font-size:0.78rem;
+    letter-spacing:2px; border:none; cursor:pointer;
+    clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);
+    transition:all 0.25s; white-space:nowrap; flex-shrink:0; margin-top:1.5rem;
+  }
+  .video-load-btn:hover { background:var(--red2); transform:translateY(-2px); }
+  .video-error { color:var(--red3); font-size:0.8rem; margin-top:0.5rem; display:none; }
+
+  /* UKRAINE SECTION */
+  .ua-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1.2rem; margin:2rem 0; }
+  .ua-card {
+    background:var(--card); border:1px solid var(--border); padding:1.5rem;
+    position:relative; overflow:hidden; transition:all 0.3s;
+  }
+  .ua-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--red); }
+  .ua-card:hover { border-color:rgba(232,0,10,0.4); transform:translateY(-4px); }
+  .ua-card-flag { font-size:1.8rem; margin-bottom:0.6rem; }
+  .ua-card-name { font-family:'Black Ops One',sans-serif; font-size:1rem; color:var(--red2); margin-bottom:0.4rem; }
+  .ua-card-role { font-size:0.72rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:0.7rem; }
+  .ua-card-text { color:var(--muted); font-size:0.87rem; line-height:1.6; }
+  .ua-card-text strong { color:var(--text); }
+
+  /* AUDIENCE TABLE */
+  .audience-table-wrap { overflow-x:auto; margin:1.5rem 0; }
+
+  /* TIMELINE */
+  .timeline { position:relative; padding-left:2.5rem; }
+  .timeline::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:linear-gradient(180deg,var(--red),rgba(232,0,10,0.1)); }
+  .tl-item {
+    position:relative; margin-bottom:2.5rem;
+    background:var(--card); border:1px solid var(--border); border-left:3px solid var(--red);
+    padding:1.5rem 1.8rem; transition:all 0.3s;
+  }
+  .tl-item:hover { background:rgba(232,0,10,0.07); border-color:rgba(232,0,10,0.4); transform:translateX(6px); }
+  .tl-item::before { content:''; position:absolute; left:-2.7rem; top:50%; transform:translateY(-50%); width:12px; height:12px; border-radius:50%; background:var(--red); box-shadow:0 0 12px var(--red); }
+  .tl-year { font-family:'Black Ops One',sans-serif; color:var(--red); font-size:1.4rem; margin-bottom:0.3rem; }
+  .tl-title { font-size:1.05rem; font-weight:700; margin-bottom:0.4rem; color:var(--white); }
+  .tl-text { color:var(--muted); line-height:1.65; font-size:0.95rem; }
+
+  /* ANALYSIS */
+  .a-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.2rem; margin:2rem 0; }
+  .a-card { background:var(--card); border:1px solid var(--border); padding:1.8rem; position:relative; overflow:hidden; transition:all 0.3s; }
+  .a-card::before { content:''; position:absolute; top:0; left:0; width:100%; height:3px; background:var(--red); }
+  .a-card:hover { border-color:rgba(232,0,10,0.4); transform:translateY(-4px); box-shadow:0 12px 40px rgba(0,0,0,0.5); }
+  .a-big { font-family:'Black Ops One',sans-serif; font-size:3rem; color:var(--red); text-shadow:0 0 20px rgba(232,0,10,0.3); }
+  .a-card-title { font-size:0.75rem; letter-spacing:3px; text-transform:uppercase; color:var(--red3); margin-bottom:0.6rem; margin-top:0.3rem; }
+  .a-card-text { color:var(--muted); line-height:1.65; font-size:0.9rem; }
+  .chart-box { background:var(--card); border:1px solid var(--border); padding:2rem; margin:2rem 0; }
+  .chart-title { font-size:0.75rem; letter-spacing:3px; text-transform:uppercase; color:var(--text); margin-bottom:1.5rem; }
+  .bar-row { display:flex; align-items:center; gap:0.8rem; margin-bottom:0.9rem; }
+  .bar-lbl { width:110px; font-size:0.82rem; color:var(--muted); text-align:right; flex-shrink:0; }
+  .bar-track { flex:1; height:26px; background:rgba(255,255,255,0.03); }
+  .bar-fill { height:100%; display:flex; align-items:center; padding:0 10px; font-size:0.78rem; font-weight:700; animation:barGrow 1.4s ease both; }
+  @keyframes barGrow { from{width:0!important} }
+  .bf-red  { background:linear-gradient(90deg,var(--red),rgba(232,0,10,0.35)); color:var(--white); }
+  .bf-dark { background:linear-gradient(90deg,#6b0008,rgba(107,0,8,0.35)); color:var(--red3); }
+
+  /* GAMES */
+  .games-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:1.2rem; }
+  .game-card { background:var(--card); border:1px solid var(--border); overflow:hidden; transition:all 0.3s; cursor:pointer; }
+  .game-card:hover { border-color:var(--red); transform:translateY(-6px); box-shadow:0 20px 50px rgba(0,0,0,0.6),0 0 20px rgba(232,0,10,0.15); }
+  .game-top { height:110px; display:flex; align-items:center; justify-content:center; font-size:3.5rem; position:relative; }
+  .game-top::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--red); }
+  .game-info { padding:1.1rem; }
+  .game-title { font-family:'Black Ops One',sans-serif; font-size:0.85rem; color:var(--white); margin-bottom:0.2rem; }
+  .game-genre { font-size:0.75rem; color:var(--muted); margin-bottom:0.7rem; letter-spacing:1px; }
+  .game-prize { display:inline-block; padding:0.2rem 0.6rem; background:rgba(232,0,10,0.12); border:1px solid rgba(232,0,10,0.3); color:var(--red2); font-size:0.72rem; font-weight:700; }
+
+  /* SURVEY */
+  .survey-wrap { max-width:680px; margin:0 auto; }
+  .q-block { background:var(--card); border:1px solid var(--border); border-left:3px solid var(--red); padding:1.8rem; margin-bottom:1.3rem; transition:border-color 0.2s; }
+  .q-block:hover { border-color:rgba(232,0,10,0.35); border-left-color:var(--red); }
+  .q-num { font-size:0.65rem; letter-spacing:4px; text-transform:uppercase; color:var(--red); margin-bottom:0.7rem; }
+  .q-text { font-size:1rem; font-weight:600; margin-bottom:1.1rem; line-height:1.4; }
+  .opts { display:flex; flex-direction:column; gap:0.5rem; }
+  .opt { display:flex; align-items:center; gap:0.9rem; padding:0.7rem 1rem; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); cursor:pointer; transition:all 0.2s; font-size:0.9rem; }
+  .opt:hover { background:rgba(232,0,10,0.06); border-color:rgba(232,0,10,0.2); }
+  .opt input { display:none; }
+  .opt:has(input:checked) { background:rgba(232,0,10,0.1); border-color:var(--red); color:var(--red2); }
+  .opt-dot { width:14px; height:14px; border-radius:50%; border:2px solid var(--muted); flex-shrink:0; transition:all 0.2s; }
+  .opt:has(input:checked) .opt-dot { background:var(--red); border-color:var(--red); box-shadow:0 0 8px var(--red); }
+  .q-range { width:100%; accent-color:var(--red); margin:0.5rem 0; height:4px; }
+  .range-lbls { display:flex; justify-content:space-between; font-size:0.72rem; color:var(--muted); }
+  #rv { color:var(--red); font-weight:700; font-size:1rem; }
+  .q-textarea { width:100%; background:rgba(255,255,255,0.02); border:1px solid var(--border); color:var(--text); padding:0.9rem; font-family:'Barlow Condensed',sans-serif; font-size:0.9rem; resize:vertical; min-height:80px; transition:border 0.2s; }
+  .q-textarea:focus { outline:none; border-color:var(--red); }
+  .survey-done { display:none; text-align:center; padding:3rem; background:rgba(232,0,10,0.05); border:1px solid var(--red); margin-top:2rem; }
+  .survey-done .ico { font-size:3.5rem; margin-bottom:1rem; }
+  .survey-done h3 { font-family:'Black Ops One',sans-serif; color:var(--red); font-size:1.5rem; margin-bottom:0.8rem; }
+  .survey-done p { color:var(--muted); line-height:1.7; }
+
+  /* ABOUT */
+  .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:start; }
+  .about-body p { color:var(--muted); line-height:1.8; margin-bottom:1.2rem; }
+  .about-body strong { color:var(--text); }
+  .about-list { list-style:none; margin-top:1rem; }
+  .about-list li { padding:0.75rem 0; border-bottom:1px solid var(--border); color:var(--muted); display:flex; align-items:center; gap:0.8rem; font-size:0.9rem; }
+  .about-list li::before { content:'▸'; color:var(--red); }
+  .org-card { background:var(--card); border:1px solid var(--border); border-left:3px solid var(--red); padding:1.2rem 1.5rem; margin-bottom:0.9rem; transition:all 0.25s; }
+  .org-card:hover { border-color:rgba(232,0,10,0.4); }
+  .org-name { font-weight:700; color:var(--red2); margin-bottom:0.2rem; font-size:0.9rem; }
+  .org-desc { color:var(--muted); font-size:0.82rem; line-height:1.5; }
+
+  /* SECTION DIVIDER */
+  .section-divider { height:1px; background:linear-gradient(90deg,transparent,var(--red),transparent); max-width:1100px; margin:0 auto; }
+
+  /* CALLOUT */
+  .callout {
+    background:rgba(232,0,10,0.06); border:1px solid var(--border);
+    border-left:4px solid var(--red); padding:1.5rem 2rem; margin:2rem 0;
+  }
+  .callout p { color:var(--text); line-height:1.8; font-size:0.95rem; }
+  .callout strong { color:var(--red2); }
+
+  footer { border-top:2px solid var(--red); text-align:center; padding:1.8rem; color:var(--muted); font-size:0.78rem; letter-spacing:1px; }
+  footer span { color:var(--red); }
+
+  /* IMAGES */
+  .hero-img {
+    position:absolute; inset:0; z-index:0;
+    background-size:cover; background-position:center;
+    opacity:0.12; filter:grayscale(60%) contrast(1.2);
+  }
+  .img-banner {
+    width:100%; height:280px; object-fit:cover;
+    display:block; filter:grayscale(40%) brightness(0.7) contrast(1.1);
+    border:1px solid var(--border);
+    border-bottom:3px solid var(--red);
+    margin-bottom:2.5rem;
+  }
+  .img-banner-wrap { position:relative; margin-bottom:2.5rem; }
+  .img-banner-wrap .img-caption {
+    position:absolute; bottom:0; left:0; right:0;
+    padding:0.6rem 1.2rem;
+    background:linear-gradient(0deg,rgba(10,0,0,0.85),transparent);
+    font-size:0.75rem; color:var(--muted); letter-spacing:2px;
+  }
+  .photo-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:0.8rem; margin:2rem 0;
+  }
+  .photo-item { position:relative; overflow:hidden; aspect-ratio:16/9; }
+  .photo-item img {
+    width:100%; height:100%; object-fit:cover; display:block;
+    filter:grayscale(30%) brightness(0.75);
+    transition:all 0.4s;
+  }
+  .photo-item:hover img { filter:grayscale(0%) brightness(0.85); transform:scale(1.04); }
+  .photo-item::after {
+    content:''; position:absolute; inset:0;
+    border:1px solid transparent; transition:border-color 0.3s;
+  }
+  .photo-item:hover::after { border-color:var(--red); }
+  .photo-item .photo-label {
+    position:absolute; bottom:0; left:0; right:0;
+    background:linear-gradient(0deg,rgba(10,0,0,0.9),transparent);
+    padding:0.5rem 0.7rem; font-size:0.72rem;
+    color:var(--text); letter-spacing:1px; text-transform:uppercase;
+  }
+  .ua-photo-card {
+    position:relative; overflow:hidden;
+  }
+  .ua-photo-card img {
+    width:100%; height:140px; object-fit:cover;
+    filter:grayscale(40%) brightness(0.65) sepia(20%);
+    display:block; transition:all 0.4s;
+  }
+  .ua-photo-card:hover img { filter:grayscale(10%) brightness(0.75); }
+  .img-side {
+    width:100%; height:200px; object-fit:cover;
+    filter:grayscale(40%) brightness(0.65);
+    border:1px solid var(--border); border-left:3px solid var(--red);
+    margin-bottom:1.5rem; display:block;
+  }
+
+  @media(max-width:768px) {
+    .hero-stats { flex-direction:column; gap:0; }
+    .hero-stat { border-right:none; border-bottom:1px solid var(--border); }
+    .about-grid { grid-template-columns:1fr; }
+    .nav-links a { padding:0.35rem 0.5rem; font-size:0.7rem; letter-spacing:0.5px; }
+    .bar-lbl { width:80px; font-size:0.74rem; }
+    .hero-stat .num { font-size:1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo">CYBER<em></em><span>SPORT</span></div>
+    <div class="nav-links">
+      <a onclick="go('home')"     id="nav-home"     class="active">ГОЛОВНА</a>
+      <a onclick="go('what')"     id="nav-what">ЩО ТАКЕ</a>
+      <a onclick="go('history')"  id="nav-history">ІСТОРІЯ</a>
+      <a onclick="go('analysis')" id="nav-analysis">АНАЛІЗ</a>
+      <a onclick="go('games')"    id="nav-games">ДИСЦИПЛІНИ</a>
+      <a onclick="go('ukraine')"  id="nav-ukraine">УКРАЇНА</a>
+      <a onclick="go('survey')"   id="nav-survey">ОПИТУВАННЯ</a>
+      <a onclick="go('about')"    id="nav-about">ПРО ГАЛУЗЬ</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════ HOME ═══════════════════════ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-img" style="background-image:url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1600&q=80')"></div>
+    <div class="hero-stripes"></div>
+    <div class="hero-deco">ESPORT</div>
+    <div style="position:relative;z-index:1">
+      <div class="hero-tag">Цифровий спорт XXI століття</div>
+      <h1>
+        <span class="line1">КІБЕР</span>
+        <span class="line2">СПОРТ</span>
+        <span class="line3">ЧЕРВОНА ЗОНА</span>
+      </h1>
+      <p class="hero-sub">Від перших турнірів 1970-х до мільярдної індустрії — <strong>50 років еволюції</strong> змагань, технологій та пристрасті.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><span class="num">$1.8B</span><span class="lbl">Ринок 2024</span></div>
+        <div class="hero-stat"><span class="num">600M+</span><span class="lbl">Глядачів</span></div>
+        <div class="hero-stat"><span class="num">50+</span><span class="lbl">Років розвитку</span></div>
+        <div class="hero-stat"><span class="num">$34M</span><span class="lbl">Рекорд призових</span></div>
+      </div>
+      <div class="hero-cta">
+        <a class="btn btn-red" onclick="go('what')">Дізнатись більше</a>
+        <a class="btn btn-ghost" onclick="go('survey')">Пройти опитування</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ ЩО ТАКЕ КІБЕРСПОРТ ═══════════════════════ -->
+<div id="page-what" class="page">
+  <div class="section">
+    <div class="s-tag">Визначення</div>
+    <h2 class="s-title">Що таке <span>кіберспорт</span></h2>
+    <div class="s-rule"></div>
+
+    <div class="img-banner-wrap">
+      <img class="img-banner" src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=1200&q=80" alt="Кіберспорт турнір">
+      <div class="img-caption">📸 Кіберспортивний турнір • Unsplash</div>
+    </div>
+
+    <div class="callout">
+      <p><strong>Кіберспорт (esports, комп'ютерний або електронний спорт)</strong> — як індивідуальні, так і командні змагання на основі відеоігор. Всупереч критиці, кіберспорт — досить вигідний і популярний напрямок навіть у порівнянні з олімпіадами та традиційним спортом. Величина призових фондів обчислюється в мільйонах доларів США.</p>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-icon">🧑‍💻</div>
+        <div class="info-card-title">Індивідуальні змагання</div>
+        <div class="info-card-text">Гравці б'ються зі своїми суперниками <strong>поодинці</strong> в тих іграх, де не потрібна участь кількох людей. Це більшість <strong>спортивних симуляторів</strong>, файтери на кшталт «Мортал Комбат» тощо.</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">👥</div>
+        <div class="info-card-title">Командні змагання</div>
+        <div class="info-card-text">Гравці виступають на турнірах у <strong>командах</strong> — збирають групи, разом тренуються, реєструють офіційно клуби, відправляються грати на чемпіонати.</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">💰</div>
+        <div class="info-card-title">Призові фонди</div>
+        <div class="info-card-text">Визнаним лідером є турнір <strong>Dota 2 The International</strong> — у 2019 році було розіграно <strong>$34 млн</strong>! Комп'ютерні битви збирають масу глядачів з усього світу.</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">📺</div>
+        <div class="info-card-title">Масштаби аудиторії</div>
+        <div class="info-card-text">За фінальною серією The International 2015 спостерігало <strong>4,6 млн осіб</strong>, а трансляцію матчів EPIC League глядачі сумарно дивилися <strong>21 млн годин</strong>!</div>
+      </div>
+    </div>
+
+    <!-- DISCIPLINES TABLE -->
+    <h3 style="font-family:'Black Ops One',sans-serif;font-size:1.4rem;margin:3rem 0 1rem;color:var(--white)">Класифікація <span style="color:var(--red)">дисциплін</span></h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Клас дисципліни</th>
+            <th>Опис</th>
+            <th>Приклади ігор</th>
+            <th>Тип</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Шутери від першої особи (FPS)</td>
+            <td>Битви із застосуванням вогнепальної або іншої зброї; вид від першої особи</td>
+            <td>CS2, Valorant, Call of Duty</td>
+            <td><span class="tag-badge">КОМАНДНІ</span></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Рольові командні (MOBA)</td>
+            <td>Тактико-стратегічні елементи, командні бої з тактичним плануванням</td>
+            <td>Dota 2, League of Legends</td>
+            <td><span class="tag-badge">КОМАНДНІ</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Авіа-, авто-, спортивні симулятори</td>
+            <td>Реалістичне відтворення руху транспортних засобів або спортивних ситуацій</td>
+            <td>Rocket League, EA FC, F1 series</td>
+            <td><span class="tag-badge">ОБИДВА</span></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Стратегії в режимі онлайн (RTS)</td>
+            <td>Управління ресурсами та арміями в реальному часі; глибоке тактичне мислення</td>
+            <td>StarCraft II, Age of Empires</td>
+            <td><span class="tag-badge">ІНДИВІДУАЛЬНІ</span></td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Battle Royale</td>
+            <td>Виживання серед великої кількості гравців на зменшуваній зоні карти</td>
+            <td>Fortnite, PUBG, Apex Legends</td>
+            <td><span class="tag-badge">ОБИДВА</span></td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Файтинги</td>
+            <td>Сюжети, що імітують рукопашний бій; один на один або командні формати</td>
+            <td>Mortal Kombat, Street Fighter, Tekken</td>
+            <td><span class="tag-badge">ІНДИВІДУАЛЬНІ</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- COMPARISON TABLE -->
+    <h3 style="font-family:'Black Ops One',sans-serif;font-size:1.4rem;margin:3rem 0 1rem;color:var(--white)">Кіберспорт vs <span style="color:var(--red)">традиційний спорт</span></h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Показник</th>
+            <th>Кіберспорт</th>
+            <th>Традиційний спорт</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Глядачі (топ-подія)</td><td style="color:#ff6670">60–100 млн онлайн</td><td>40–80 млн (ТБ)</td></tr>
+          <tr><td>Рекордний призовий</td><td style="color:#ff6670">$34M (Dota 2 TI 2019)</td><td>$55M (Wimbledon 2023)</td></tr>
+          <tr><td>Середній вік аудиторії</td><td style="color:#ff6670">26 років</td><td>40–50 років</td></tr>
+          <tr><td>Доступність участі</td><td style="color:#ff6670">ПК або смартфон</td><td>Спортзал, обладнання</td></tr>
+          <tr><td>Географія</td><td style="color:#ff6670">Глобальна, без кордонів</td><td>Обмежена географією</td></tr>
+          <tr><td>Зростання аудиторії</td><td style="color:#ff6670">+15% щорічно</td><td>+2–3% щорічно</td></tr>
+          <tr><td>Олімпійський статус</td><td style="color:#ff6670">З 2025 (окремі ігри)</td><td>Так, з 1896 року</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PHOTO GRID -->
+    <h3 style="font-family:'Black Ops One',sans-serif;font-size:1.3rem;margin:3rem 0 1rem;color:var(--white)">Кіберспорт у <span style="color:var(--red)">фотографіях</span></h3>
+    <div class="photo-grid">
+      <div class="photo-item">
+        <img src="https://images.unsplash.com/photo-1555680202-c86f0e12f086?w=600&q=80" alt="Гравець за комп'ютером" loading="lazy">
+        <div class="photo-label">Професійний гравець</div>
+      </div>
+      <div class="photo-item">
+        <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600&q=80" alt="Кіберспорт арена" loading="lazy">
+        <div class="photo-label">Ігрова арена</div>
+      </div>
+      <div class="photo-item">
+        <img src="https://images.unsplash.com/photo-1603481588273-2f908a9a7a1b?w=600&q=80" alt="Команда кіберспортсменів" loading="lazy">
+        <div class="photo-label">Командна гра</div>
+      </div>
+      <div class="photo-item">
+        <img src="https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&q=80" alt="Ігрова периферія" loading="lazy">
+        <div class="photo-label">Ігрове обладнання</div>
+      </div>
+    </div>
+
+    <!-- VIDEO SECTION -->
+    <div class="video-section">
+      <div class="video-section-title">🎬 Відеоролик про кіберспорт</div>
+      <div class="video-section-sub">Вставте посилання на YouTube і натисніть «Завантажити відео».</div>
+      <div class="video-controls" style="margin-bottom:1rem">
+        <div class="video-url-group">
+          <label class="video-url-label">Посилання на YouTube відео</label>
+          <input class="video-url-input" id="videoUrl" type="text"
+            placeholder="Напр.: https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            value="">
+          <div class="video-hint">
+            Підтримуються:<br>
+            • youtube.com/watch?v=XXXXXXX<br>
+            • youtu.be/XXXXXXX
+          </div>
+          <div class="video-error" id="videoError">❌ Не вдалося розпізнати. Перевірте посилання.</div>
+        </div>
+        <button class="video-load-btn" onclick="loadVideo()">▶ ЗАВАНТАЖИТИ ВІДЕО</button>
+      </div>
+      <div class="video-wrapper" id="videoWrapper" style="display:none">
+        <iframe id="mainVideo" allowfullscreen
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+        </iframe>
+      </div>
+      <div id="videoPlaceholder" style="border:2px dashed rgba(232,0,10,0.3);padding:3rem;text-align:center;color:var(--muted);font-size:0.9rem;">
+        📺 Введіть посилання вище та натисніть «Завантажити відео»
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════ HISTORY ═══════════════════════ -->
+<div id="page-history" class="page">
+  <div class="section">
+    <div class="s-tag">Хронологія</div>
+    <h2 class="s-title">Історія <span>розвитку</span></h2>
+    <div class="s-rule"></div>
+    <div class="img-banner-wrap">
+      <img class="img-banner" src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&q=80" alt="Ігрова зала" loading="lazy">
+      <div class="img-caption">📸 50+ років еволюції кіберспорту • Unsplash</div>
+    </div>
+    <p style="color:var(--muted);max-width:680px;line-height:1.7;margin-bottom:3rem">Від аркадних залів до стадіонів — кіберспорт пройшов унікальний шлях трансформації з нішевого хобі у глобальну індустрію.</p>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-year">1972</div><div class="tl-title">🎮 Перший відомий турнір</div><div class="tl-text">В Стенфордському університеті відбувся перший офіційно задокументований ігровий турнір зі Spacewar. Переможець отримав річну передплату на журнал Rolling Stone.</div></div>
+      <div class="tl-item"><div class="tl-year">1980-і</div><div class="tl-title">🕹️ Ера аркадних турнірів</div><div class="tl-text">Atari провела перший масовий турнір зі Space Invaders у 1980 році — понад 10 000 учасників. Виникають перші рейтинги та клуби ентузіастів.</div></div>
+      <div class="tl-item"><div class="tl-year">1990-і</div><div class="tl-title">🌐 Народження мережевого гейміngу</div><div class="tl-text">Quake, StarCraft і Counter-Strike породили перше покоління кіберспортсменів. У Кореї кіберспорт транслювався на державному телебаченні.</div></div>
+      <div class="tl-item"><div class="tl-year">2000</div><div class="tl-title">🏆 Перші міжнародні федерації</div><div class="tl-text">World Cyber Games (WCG) — «Олімпіада кіберспорту» за підтримки Samsung. Перший чемпіонат зібрав 430 гравців з 17 країн.</div></div>
+      <div class="tl-item"><div class="tl-year">2011</div><div class="tl-title">📺 Стримінг-революція + The International</div><div class="tl-text">Запуск Twitch.tv кардинально змінив індустрію. Valve запустила The International з призовим $1 млн. До 2019 року він зріс до рекордних $34.3 млн.</div></div>
+      <div class="tl-item"><div class="tl-year">2015–2018</div><div class="tl-title">🏟️ Стадіонна ера</div><div class="tl-text">Фінал LoL 2017 — 60 000 глядачів і 60 млн онлайн. Madison Square Garden, Staples Center. Overwatch League — перша франчайзингова ліга.</div></div>
+      <div class="tl-item"><div class="tl-year">2020–2024</div><div class="tl-title">🚀 Визнання та інституціоналізація</div><div class="tl-text">Кіберспорт в Азійських іграх 2022. Доходи перевищили $1.8 млрд. 700+ університетів пропонують стипендії. 50+ країн офіційно визнали кіберспорт.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ ANALYSIS ═══════════════════════ -->
+<div id="page-analysis" class="page">
+  <div class="section">
+    <div class="s-tag">Дані та тренди</div>
+    <h2 class="s-title">Аналіз <span>індустрії</span></h2>
+    <div class="s-rule"></div>
+    <div class="a-grid">
+      <div class="a-card"><div class="a-big">$1.8B</div><div class="a-card-title">Доходи ринку 2024</div><div class="a-card-text">Трансляційні права, спонсорство, мерчандайз та продаж квитків.</div></div>
+      <div class="a-card"><div class="a-big">600M</div><div class="a-card-title">Глядачів у 2024</div><div class="a-card-text">320 млн активних ентузіастів, 280 млн нерегулярна аудиторія. Середній вік — 26 років.</div></div>
+      <div class="a-card"><div class="a-big">$34M</div><div class="a-card-title">Рекордний призовий</div><div class="a-card-text">The International 2019 — $34.3 млн по Dota 2. Частина зібрана через Battle Pass.</div></div>
+      <div class="a-card"><div class="a-big">57%</div><div class="a-card-title">Аудиторія 18–34</div><div class="a-card-text">Наймолодша аудиторія серед усіх видів спорту. Привабливо для брендів.</div></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">📊 Доходи ринку за роками (млрд USD)</div>
+      <div class="bar-row"><div class="bar-lbl">2018</div><div class="bar-track"><div class="bar-fill bf-dark" style="width:31%">$0.78B</div></div></div>
+      <div class="bar-row"><div class="bar-lbl">2019</div><div class="bar-track"><div class="bar-fill bf-dark" style="width:40%">$1.00B</div></div></div>
+      <div class="bar-row"><div class="bar-lbl">2020</div><div class="bar-track"><div class="bar-fill bf-red" style="width:46%">$1.12B</div></div></div>
+      <div class="bar-row"><div class="bar-lbl">2021</div><div class="bar-track"><div class="bar-fill bf-red" style="width:55%">$1.38B</div></div></div>
+      <div class="bar-row"><div class="bar-lbl">2022</div><div class="bar-track"><div class="bar-fill bf-red" style="width:62%">$1.47B</div></div></div>
+      <div class="bar-row"><div class="bar-lbl">2023</div><div class="bar-track"><div class="bar-fill bf-red" style="width:70%">$1.63B</div></div></div>
+      <div class="bar-row"><div class="bar-lbl">2024</div><div class="bar-track"><div class="bar-fill bf-red" style="width:80%">$1.81B</div></div></div>
+    </div>
+
+    <!-- AUDIENCE TABLE -->
+    <h3 style="font-family:'Black Ops One',sans-serif;font-size:1.3rem;margin:2.5rem 0 1rem;color:var(--white)">Аудиторія за <span style="color:var(--red)">регіонами</span></h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Регіон</th><th>Частка аудиторії</th><th>Активні ентузіасти (млн)</th><th>Ключові ринки</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Азія–Тихоокеан</td><td style="color:var(--red2)">57%</td><td>182</td><td>Китай, Корея, Японія</td></tr>
+          <tr><td>Північна Америка</td><td style="color:var(--red2)">16%</td><td>51</td><td>США, Канада</td></tr>
+          <tr><td>Європа</td><td style="color:var(--red2)">14%</td><td>45</td><td>Німеччина, Франція, Україна</td></tr>
+          <tr><td>Латинська Америка</td><td style="color:var(--red2)">8%</td><td>26</td><td>Бразилія, Мексика</td></tr>
+          <tr><td>Інші регіони</td><td style="color:var(--red2)">5%</td><td>16</td><td>Близький Схід, Африка</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="a-grid" style="margin-top:2rem">
+      <div class="a-card"><div style="font-size:1.6rem;margin-bottom:.6rem">⚠️</div><div class="a-card-title">Проблеми галузі</div><div class="a-card-text">Відсутність єдиної регуляції. Вигорання гравців. Короткі кар'єри (пік 18–26 р.). Читерство.</div></div>
+      <div class="a-card"><div style="font-size:1.6rem;margin-bottom:.6rem">🚀</div><div class="a-card-title">Точки зростання</div><div class="a-card-text">Мобільний кіберспорт. VR-турніри. Метавсесвіт. Африка та Лат. Америка як нові ринки.</div></div>
+      <div class="a-card"><div style="font-size:1.6rem;margin-bottom:.6rem">🎓</div><div class="a-card-title">Освіта та кар'єра</div><div class="a-card-text">700+ університетів пропонують кіберспортивні програми. Тренер, аналітик, продюсер.</div></div>
+      <div class="a-card"><div style="font-size:1.6rem;margin-bottom:.6rem">🏅</div><div class="a-card-title">Шлях до Олімпіади</div><div class="a-card-text">МОК затвердив Олімпійські кіберспортивні ігри 2025 у Саудівській Аравії.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ GAMES ═══════════════════════ -->
+<div id="page-games" class="page">
+  <div class="section">
+    <div class="s-tag">Дисципліни</div>
+    <h2 class="s-title">Кіберспортивні <span>ігри</span></h2>
+    <div class="s-rule"></div>
+
+    <!-- GAMES TABLE -->
+    <div class="tbl-wrap" style="margin-bottom:3rem">
+      <table>
+        <thead>
+          <tr><th>Гра</th><th>Жанр</th><th>Рекорд призових</th><th>Топ-подія</th><th>Розробник</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Dota 2</td><td>MOBA</td><td style="color:var(--red2)">$34.3M</td><td>The International</td><td>Valve</td></tr>
+          <tr><td>League of Legends</td><td>MOBA</td><td style="color:var(--red2)">$2.5M</td><td>LoL World Championship</td><td>Riot Games</td></tr>
+          <tr><td>CS2 / CS:GO</td><td>FPS</td><td style="color:var(--red2)">$1.25M</td><td>Major Championships</td><td>Valve</td></tr>
+          <tr><td>Valorant</td><td>FPS</td><td style="color:var(--red2)">$2M</td><td>VCT Championship</td><td>Riot Games</td></tr>
+          <tr><td>Fortnite</td><td>Battle Royale</td><td style="color:var(--red2)">$30M</td><td>World Cup</td><td>Epic Games</td></tr>
+          <tr><td>StarCraft II</td><td>RTS</td><td style="color:var(--red2)">$1.7M</td><td>GSL, IEM Katowice</td><td>Blizzard</td></tr>
+          <tr><td>Rocket League</td><td>Симулятор</td><td style="color:var(--red2)">$2M</td><td>RLCS Championship</td><td>Psyonix</td></tr>
+          <tr><td>EA FC / FIFA</td><td>Симулятор</td><td style="color:var(--red2)">$500K</td><td>eWorld Cup</td><td>EA Sports</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="games-grid">
+      <div class="game-card"><div class="game-top" style="padding:0;overflow:hidden"><img src="https://images.unsplash.com/photo-1542652694-40abf526446e?w=400&q=75" alt="Dota 2" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.6) saturate(1.2)"></div><div class="game-info"><div class="game-title">DOTA 2</div><div class="game-genre">MOBA • Командна стратегія</div><div class="game-prize">Приз: до $34M</div><p style="color:var(--muted);font-size:.82rem;margin-top:.7rem;line-height:1.5">Найбільший призовий фонд в історії. The International — топ-18 команд світу.</p></div></div>
+      <div class="game-card"><div class="game-top" style="padding:0;overflow:hidden"><img src="https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400&q=75" alt="League of Legends" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.6) saturate(1.2)"></div><div class="game-info"><div class="game-title">LEAGUE OF LEGENDS</div><div class="game-genre">MOBA • Командна стратегія</div><div class="game-prize">Приз: до $2.5M</div><p style="color:var(--muted);font-size:.82rem;margin-top:.7rem;line-height:1.5">Чемпіонат світу збирає 100+ млн глядачів щороку.</p></div></div>
+      <div class="game-card"><div class="game-top" style="padding:0;overflow:hidden"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=75" alt="CS2" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.6) saturate(1.2)"></div><div class="game-info"><div class="game-title">CS2 / CS:GO</div><div class="game-genre">FPS • Тактичний шутер</div><div class="game-prize">Приз: до $1.25M</div><p style="color:var(--muted);font-size:.82rem;margin-top:.7rem;line-height:1.5">Легенда тактичних шутерів. Major-турніри — найпрестижніші FPS змагання.</p></div></div>
+      <div class="game-card"><div class="game-top" style="padding:0;overflow:hidden"><img src="https://images.unsplash.com/photo-1616588589676-62b3bd4ff6d2?w=400&q=75" alt="Valorant" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.6) saturate(1.2)"></div><div class="game-info"><div class="game-title">VALORANT</div><div class="game-genre">FPS • Тактичний шутер</div><div class="game-prize">Приз: до $2M</div><p style="color:var(--muted);font-size:.82rem;margin-top:.7rem;line-height:1.5">VCT Championship від Riot Games — одне з найбільших шоу в кіберспорті.</p></div></div>
+      <div class="game-card"><div class="game-top" style="padding:0;overflow:hidden"><img src="https://images.unsplash.com/photo-1607853202273-797f1c22a38e?w=400&q=75" alt="Rocket League" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.6) saturate(1.2)"></div><div class="game-info"><div class="game-title">ROCKET LEAGUE</div><div class="game-genre">Спортивний симулятор</div><div class="game-prize">Приз: до $2M</div><p style="color:var(--muted);font-size:.82rem;margin-top:.7rem;line-height:1.5">Футбол на автомобілях. RLCS — глобальна ліга по всьому світу.</p></div></div>
+      <div class="game-card"><div class="game-top" style="padding:0;overflow:hidden"><img src="https://images.unsplash.com/photo-1580327344181-c1163234e5a0?w=400&q=75" alt="StarCraft" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.6) saturate(1.2)"></div><div class="game-info"><div class="game-title">STARCRAFT II</div><div class="game-genre">RTS • Стратегія</div><div class="game-prize">Приз: до $1.7M</div><p style="color:var(--muted);font-size:.82rem;margin-top:.7rem;line-height:1.5">Культовий символ Кореї. GSL — найпрестижніша ліга в усьому кіберспорті.</p></div></div>
+      <div class="game-card"><div class="game-top" style="padding:0;overflow:hidden"><img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=400&q=75" alt="FIFA" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.6) saturate(1.2)"></div><div class="game-info"><div class="game-title">FIFA / EA FC</div><div class="game-genre">Спортивний симулятор</div><div class="game-prize">Приз: до $500K</div><p style="color:var(--muted);font-size:.82rem;margin-top:.7rem;line-height:1.5">Найпопулярніший симулятор у Європі. eWorld Cup підтримується FIFA.</p></div></div>
+      <div class="game-card"><div class="game-top" style="padding:0;overflow:hidden"><img src="https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&q=75" alt="Fortnite" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.6) saturate(1.2)"></div><div class="game-info"><div class="game-title">FORTNITE</div><div class="game-genre">Battle Royale</div><div class="game-prize">Приз: до $30M</div><p style="color:var(--muted);font-size:.82rem;margin-top:.7rem;line-height:1.5">World Cup 2019 — $30M призових. 16-річний Bugha здобув $3M.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ UKRAINE ═══════════════════════ -->
+<div id="page-ukraine" class="page">
+  <div class="section">
+    <div class="s-tag">🇺🇦 Рідна сцена</div>
+    <h2 class="s-title">Кіберспорт в <span>Україні</span></h2>
+    <div class="s-rule"></div>
+
+    <div class="img-banner-wrap">
+      <img class="img-banner" src="https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=1200&q=80" alt="Кіберспорт Україна" loading="lazy">
+      <div class="img-caption">📸 Українська кіберспортивна сцена • Unsplash</div>
+    </div>
+
+    <div class="callout">
+      <p>Україна — одна з провідних кіберспортивних держав Європи. Українські гравці та організації регулярно беруть участь у найпрестижніших міжнародних турнірах та посідають топові місця у світових рейтингах. <strong>Кіберспорт офіційно визнано видом спорту в Україні у 2021 році.</strong></p>
+    </div>
+
+    <h3 style="font-family:'Black Ops One',sans-serif;font-size:1.3rem;margin:2rem 0 1rem;color:var(--white)">Зірки <span style="color:var(--red)">українського</span> кіберспорту</h3>
+    <div class="ua-grid">
+      <div class="ua-card ua-photo-card">
+        <img src="https://images.unsplash.com/photo-1542751110-97427bbecf20?w=500&q=75" alt="S1mple" loading="lazy">
+        <div class="ua-card-flag" style="position:absolute;top:8px;left:10px;font-size:1.4rem">🇺🇦</div>
+        <div style="padding:1rem">
+          <div class="ua-card-name">S1mple</div>
+          <div class="ua-card-role">CS:GO / CS2 • Natus Vincere</div>
+          <div class="ua-card-text">Олександр «s1mple» Костильєв — <strong>найкращий гравець CS в історії</strong> за версією HLTV. 8 разів MVP великих турнірів.</div>
+        </div>
+      </div>
+      <div class="ua-card ua-photo-card">
+        <img src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=500&q=75" alt="Dendi" loading="lazy">
+        <div class="ua-card-flag" style="position:absolute;top:8px;left:10px;font-size:1.4rem">🇺🇦</div>
+        <div style="padding:1rem">
+          <div class="ua-card-name">Dendi</div>
+          <div class="ua-card-role">Dota 2 • Na'Vi (легенда)</div>
+          <div class="ua-card-text">Данило «Dendi» Ішутін — <strong>перший чемпіон The International 2011</strong>. Символ золотої ери Dota 2.</div>
+        </div>
+      </div>
+      <div class="ua-card ua-photo-card">
+        <img src="https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=500&q=75" alt="electroNic" loading="lazy">
+        <div class="ua-card-flag" style="position:absolute;top:8px;left:10px;font-size:1.4rem">🇺🇦</div>
+        <div style="padding:1rem">
+          <div class="ua-card-name">electroNic</div>
+          <div class="ua-card-role">CS2 • Natus Vincere</div>
+          <div class="ua-card-text">Капітан Na'Vi у CS2. <strong>Чемпіон PGL Major Stockholm 2021</strong>.</div>
+        </div>
+      </div>
+      <div class="ua-card ua-photo-card">
+        <img src="https://images.unsplash.com/photo-1534308143481-c55f00be8bd7?w=500&q=75" alt="B1T" loading="lazy">
+        <div class="ua-card-flag" style="position:absolute;top:8px;left:10px;font-size:1.4rem">🇺🇦</div>
+        <div style="padding:1rem">
+          <div class="ua-card-name">B1T</div>
+          <div class="ua-card-role">CS2 • Natus Vincere</div>
+          <div class="ua-card-text"><strong>Найвищий рейтинг HLTV 2022</strong>. Молоде покоління українського кіберспорту.</div>
+        </div>
+      </div>
+      <div class="ua-card ua-photo-card">
+        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=500&q=75" alt="Puppey" loading="lazy">
+        <div class="ua-card-flag" style="position:absolute;top:8px;left:10px;font-size:1.4rem">🇺🇦</div>
+        <div style="padding:1rem">
+          <div class="ua-card-name">Puppey</div>
+          <div class="ua-card-role">Dota 2 • Team Secret</div>
+          <div class="ua-card-text"><strong>Найбільше турнірів серед усіх дота-гравців</strong>. Унікальний стиль гри.</div>
+        </div>
+      </div>
+      <div class="ua-card ua-photo-card">
+        <img src="https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=500&q=75" alt="Na'Vi" loading="lazy">
+        <div class="ua-card-flag" style="position:absolute;top:8px;left:10px;font-size:1.4rem">🇺🇦</div>
+        <div style="padding:1rem">
+          <div class="ua-card-name">NAVI — Na'Vi</div>
+          <div class="ua-card-role">Організація • Київ, 2009</div>
+          <div class="ua-card-text"><strong>Топ-5 організація світу</strong>. CS2, Dota 2, Valorant. Чемпіони Major 2021 та TI 2011.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UA table -->
+    <h3 style="font-family:'Black Ops One',sans-serif;font-size:1.3rem;margin:3rem 0 1rem;color:var(--white)">Досягнення <span style="color:var(--red)">Na'Vi</span> на міжнародній арені</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Рік</th><th>Турнір</th><th>Гра</th><th>Результат</th><th>Призові</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2011</td><td>The International</td><td>Dota 2</td><td style="color:var(--red2)">🥇 1 місце</td><td>$1,000,000</td></tr>
+          <tr><td>2012</td><td>The International</td><td>Dota 2</td><td>🥈 2 місце</td><td>$250,000</td></tr>
+          <tr><td>2013</td><td>The International</td><td>Dota 2</td><td>🥈 2 місце</td><td>$412,000</td></tr>
+          <tr><td>2021</td><td>PGL Major Stockholm</td><td>CS:GO</td><td style="color:var(--red2)">🥇 1 місце</td><td>$500,000</td></tr>
+          <tr><td>2021</td><td>ESL Pro League S13</td><td>CS:GO</td><td style="color:var(--red2)">🥇 1 місце</td><td>$400,000</td></tr>
+          <tr><td>2022</td><td>IEM Katowice</td><td>CS:GO</td><td style="color:var(--red2)">🥇 1 місце</td><td>$500,000</td></tr>
+          <tr><td>2023</td><td>BLAST Premier World Final</td><td>CS2</td><td>🥈 2 місце</td><td>$250,000</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ SURVEY ═══════════════════════ -->
+<div id="page-survey" class="page">
+  <div class="section">
+    <div class="s-tag">Дослідження</div>
+    <h2 class="s-title">Опитування про <span>кіберспорт</span></h2>
+    <div class="s-rule"></div>
+    <p style="color:var(--muted);max-width:600px;line-height:1.7;margin-bottom:2.5rem">Допоможіть краще зрозуміти ставлення людей до кіберспорту. Анонімно, ~3 хвилини.</p>
+    <div class="survey-wrap">
+      <div class="q-block"><div class="q-num">ПИТАННЯ 01 / 07</div><div class="q-text">Чи вважаєте ви кіберспорт повноцінним видом спорту?</div><div class="opts"><label class="opt"><input type="radio" name="q1"><div class="opt-dot"></div>Так — це такий самий спорт, як і будь-який інший</label><label class="opt"><input type="radio" name="q1"><div class="opt-dot"></div>Скоріше так — особливий вид з власною специфікою</label><label class="opt"><input type="radio" name="q1"><div class="opt-dot"></div>Скоріше ні — змагання, але не спорт у традиційному розумінні</label><label class="opt"><input type="radio" name="q1"><div class="opt-dot"></div>Ні — це просто гра, а не спорт</label></div></div>
+      <div class="q-block"><div class="q-num">ПИТАННЯ 02 / 07</div><div class="q-text">Як часто ви переглядаєте кіберспортивні трансляції або турніри?</div><div class="opts"><label class="opt"><input type="radio" name="q2"><div class="opt-dot"></div>Щодня або кілька разів на тиждень</label><label class="opt"><input type="radio" name="q2"><div class="opt-dot"></div>Раз на тиждень або рідше</label><label class="opt"><input type="radio" name="q2"><div class="opt-dot"></div>Тільки великі турніри (раз на місяць або рідше)</label><label class="opt"><input type="radio" name="q2"><div class="opt-dot"></div>Ніколи не переглядав(ла)</label></div></div>
+      <div class="q-block"><div class="q-num">ПИТАННЯ 03 / 07</div><div class="q-text">Яка кіберспортивна дисципліна вам найбільше до вподоби?</div><div class="opts"><label class="opt"><input type="radio" name="q3"><div class="opt-dot"></div>MOBA (Dota 2, League of Legends)</label><label class="opt"><input type="radio" name="q3"><div class="opt-dot"></div>FPS шутери (CS2, Valorant, Call of Duty)</label><label class="opt"><input type="radio" name="q3"><div class="opt-dot"></div>Battle Royale (Fortnite, PUBG)</label><label class="opt"><input type="radio" name="q3"><div class="opt-dot"></div>Спортивні симулятори (FIFA, Rocket League)</label><label class="opt"><input type="radio" name="q3"><div class="opt-dot"></div>Стратегії (StarCraft, Age of Empires)</label></div></div>
+      <div class="q-block"><div class="q-num">ПИТАННЯ 04 / 07</div><div class="q-text">Чи підтримуєте ви включення кіберспорту до програми Олімпійських ігор?</div><div class="opts"><label class="opt"><input type="radio" name="q4"><div class="opt-dot"></div>Так, абсолютно підтримую</label><label class="opt"><input type="radio" name="q4"><div class="opt-dot"></div>Так, але тільки для певних дисциплін</label><label class="opt"><input type="radio" name="q4"><div class="opt-dot"></div>Ні, Олімпіада — лише для фізичних видів спорту</label><label class="opt"><input type="radio" name="q4"><div class="opt-dot"></div>Мені байдуже</label></div></div>
+      <div class="q-block"><div class="q-num">ПИТАННЯ 05 / 07</div><div class="q-text">Оцініть рівень ваших знань про кіберспорт (від 1 до 10)</div><input type="range" min="1" max="10" value="5" class="q-range" oninput="document.getElementById('rv').textContent=this.value"><div class="range-lbls"><span>1 — Нічого не знаю</span><span id="rv">5</span><span>10 — Експерт</span></div></div>
+      <div class="q-block"><div class="q-num">ПИТАННЯ 06 / 07</div><div class="q-text">Що, на вашу думку, є найбільшою проблемою сучасного кіберспорту?</div><div class="opts"><label class="opt"><input type="radio" name="q6"><div class="opt-dot"></div>Відсутність єдиної регуляції та стандартів</label><label class="opt"><input type="radio" name="q6"><div class="opt-dot"></div>Вигорання та шкода здоров'ю гравців</label><label class="opt"><input type="radio" name="q6"><div class="opt-dot"></div>Читерство та маніпуляції результатами</label><label class="opt"><input type="radio" name="q6"><div class="opt-dot"></div>Непорозуміння з боку суспільства</label><label class="opt"><input type="radio" name="q6"><div class="opt-dot"></div>Комерціалізація та втрата духу змагань</label></div></div>
+      <div class="q-block"><div class="q-num">ПИТАННЯ 07 / 07</div><div class="q-text">Чи мрієте ви або мріяли про кар'єру в кіберспорті? Якщо так — у якій ролі?</div><textarea class="q-textarea" placeholder="Поділіться своїми думками..."></textarea></div>
+      <div style="text-align:center;margin-top:1.5rem">
+        <button class="btn btn-red" onclick="document.getElementById('sdone').style.display='block';document.getElementById('sdone').scrollIntoView({behavior:'smooth'})">НАДІСЛАТИ ВІДПОВІДІ</button>
+      </div>
+      <div id="sdone" class="survey-done"><div class="ico">✅</div><h3>Дякуємо!</h3><p>Ваші відповіді допомагають краще зрозуміти ставлення суспільства до кіберспорту в Україні та світі.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ ABOUT ═══════════════════════ -->
+<div id="page-about" class="page">
+  <div class="section">
+    <div class="s-tag">Екосистема</div>
+    <h2 class="s-title">Про <span>галузь</span></h2>
+    <div class="s-rule"></div>
+    <div class="about-grid">
+      <div class="about-body">
+        <p>Кіберспорт — організовані змагання у відеоіграх на професійному рівні. Тут є <strong>команди, ліги, тренери, спонсори та мільйонні аудиторії</strong>.</p>
+        <p>Сучасний кіберспорт — повноцінна індустрія з академіями, медіаправами вартістю сотні мільйонів та визнанням МОК.</p>
+        <p>Україна є <strong>активним гравцем</strong> — Na'Vi входить до топ-5 організацій світу, а українські гравці регулярно збирають найпрестижніші нагороди.</p>
+        <ul class="about-list">
+          <li>700+ університетів мають кіберспортивні програми</li>
+          <li>Середня зарплата топ-гравця — $300K–$2M на рік</li>
+          <li>50+ країн офіційно визнали кіберспорт</li>
+          <li>Кіберспорт в програмі Азійських ігор з 2022 року</li>
+          <li>Перші Олімпійські кіберспортивні ігри — 2025 рік</li>
+        </ul>
+      </div>
+      <div>
+        <div class="s-tag" style="margin-bottom:1rem">Провідні організації</div>
+        <div class="org-card"><div class="org-name">🇺🇦 Natus Vincere (Na'Vi)</div><div class="org-desc">Київ, 2009. Чемпіони TI 2011 і Major CS:GO 2021. Топ-5 у світовому рейтингу.</div></div>
+        <div class="org-card"><div class="org-name">🌍 Team Liquid</div><div class="org-desc">Нідерланди/США, 2000. Одна з найстаріших організацій у 10+ дисциплінах.</div></div>
+        <div class="org-card"><div class="org-name">🇺🇸 FaZe Clan</div><div class="org-desc">США, 2010. Кіберспортивна та медіа-компанія, поєднує спорт з культурою.</div></div>
+        <div class="org-card"><div class="org-name">🇰🇷 T1</div><div class="org-desc">Корея, 2002. Команда Faker. Найтитулованіша організація в League of Legends.</div></div>
+        <div class="org-card"><div class="org-name">🇨🇳 EDward Gaming</div><div class="org-desc">Китай, 2013. Чемпіони LoL Worlds 2021. Лідери азійського кіберспорту.</div></div>
+      </div>
+    </div>
+  </div>
+  <footer><p>© 2025 <span>CYBERSPORT</span> — Дослідницький проект | Розроблено для навчальних цілей</p></footer>
+</div>
+
+<script>
+function go(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── VIDEO ──────────────────────────────────────
+function loadVideo(){
+  const raw = document.getElementById('videoUrl').value.trim();
+  const err = document.getElementById('videoError');
+  err.style.display = 'none';
+  let vid = null;
+
+  let m = raw.match(/[?&]v=([a-zA-Z0-9_-]{10,12})/);
+  if(m) vid = m[1];
+  if(!vid){ m = raw.match(/youtu\.be\/([a-zA-Z0-9_-]{10,12})/); if(m) vid=m[1]; }
+  if(!vid){ m = raw.match(/embed\/([a-zA-Z0-9_-]{10,12})/); if(m) vid=m[1]; }
+
+  if(vid){
+    const iframe = document.getElementById('mainVideo');
+    iframe.src = 'https://www.youtube-nocookie.com/embed/' + vid + '?rel=0';
+    document.getElementById('videoWrapper').style.display = 'block';
+    document.getElementById('videoPlaceholder').style.display = 'none';
+  } else {
+    err.style.display = 'block';
+  }
+}
+
+// ── EDITOR ─────────────────────────────────────
+const EDITOR_CSS = `
+  #editor-fab {
+    position:fixed; bottom:1.5rem; right:1.5rem; z-index:9000;
+    width:52px; height:52px; border-radius:50%;
+    background:var(--red); border:none; cursor:pointer;
+    box-shadow:0 4px 20px rgba(232,0,10,0.5);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem; transition:all 0.25s; color:#fff;
+  }
+  #editor-fab:hover { transform:scale(1.1); background:var(--red2); }
+  #editor-panel {
+    position:fixed; top:0; right:0; bottom:0; width:360px; max-width:100vw;
+    background:#0f0000; border-left:2px solid var(--red);
+    z-index:8999; transform:translateX(100%);
+    transition:transform 0.35s cubic-bezier(.4,0,.2,1);
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  #editor-panel.open { transform:translateX(0); }
+  #editor-header {
+    background:var(--red); padding:1rem 1.2rem;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-shrink:0;
+  }
+  #editor-header h3 { font-family:'Black Ops One',sans-serif; font-size:0.95rem; color:#fff; letter-spacing:2px; }
+  #editor-close { background:none; border:none; color:#fff; font-size:1.4rem; cursor:pointer; line-height:1; }
+  #editor-body { flex:1; overflow-y:auto; padding:1rem; }
+  #editor-body::-webkit-scrollbar { width:4px; }
+  #editor-body::-webkit-scrollbar-track { background:#0a0000; }
+  #editor-body::-webkit-scrollbar-thumb { background:var(--red); }
+  .e-section { margin-bottom:1.5rem; }
+  .e-label {
+    font-size:0.65rem; letter-spacing:3px; text-transform:uppercase;
+    color:var(--red); margin-bottom:0.5rem; display:flex; align-items:center; gap:6px;
+  }
+  .e-label::before { content:''; display:inline-block; width:12px; height:2px; background:var(--red); }
+  .e-input, .e-textarea, .e-select {
+    width:100%; background:rgba(255,255,255,0.04);
+    border:1px solid rgba(232,0,10,0.25); color:#f0e0e0;
+    padding:0.6rem 0.8rem; font-family:'Barlow Condensed',sans-serif;
+    font-size:0.88rem; margin-bottom:0.5rem; transition:border 0.2s;
+  }
+  .e-input:focus, .e-textarea:focus, .e-select:focus { outline:none; border-color:var(--red); }
+  .e-textarea { resize:vertical; min-height:80px; }
+  .e-select { cursor:pointer; }
+  .e-btn {
+    width:100%; padding:0.7rem; background:var(--red); color:#fff;
+    border:none; cursor:pointer; font-family:'Black Ops One',sans-serif;
+    font-size:0.78rem; letter-spacing:2px; margin-top:0.3rem;
+    clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);
+    transition:background 0.2s;
+  }
+  .e-btn:hover { background:var(--red2); }
+  .e-btn-outline {
+    width:100%; padding:0.6rem; background:transparent;
+    border:1px solid rgba(232,0,10,0.4); color:var(--red3);
+    cursor:pointer; font-family:'Barlow Condensed',sans-serif;
+    font-size:0.82rem; margin-top:0.3rem; transition:all 0.2s;
+  }
+  .e-btn-outline:hover { background:rgba(232,0,10,0.08); border-color:var(--red); }
+  .e-divider { height:1px; background:rgba(232,0,10,0.15); margin:1rem 0; }
+  .e-toast {
+    position:fixed; bottom:5rem; right:1.5rem; z-index:9999;
+    background:var(--red); color:#fff; padding:0.6rem 1.2rem;
+    font-size:0.85rem; font-family:'Barlow Condensed',sans-serif;
+    box-shadow:0 4px 20px rgba(0,0,0,0.5);
+    transform:translateY(20px); opacity:0; pointer-events:none;
+    transition:all 0.3s;
+  }
+  .e-toast.show { transform:translateY(0); opacity:1; }
+  .custom-block {
+    background:rgba(232,0,10,0.04); border:1px solid rgba(232,0,10,0.2);
+    border-left:3px solid var(--red); padding:1.2rem 1.5rem; margin:1rem 0;
+    position:relative;
+  }
+  .custom-block .del-btn {
+    position:absolute; top:0.5rem; right:0.5rem;
+    background:rgba(232,0,10,0.15); border:1px solid rgba(232,0,10,0.3);
+    color:var(--red3); font-size:0.7rem; padding:0.2rem 0.5rem; cursor:pointer;
+    font-family:'Barlow Condensed',sans-serif;
+  }
+  .custom-block .del-btn:hover { background:var(--red); color:#fff; }
+  .custom-block h4 { color:var(--red2); font-size:0.95rem; margin-bottom:0.5rem; }
+  .custom-block p  { color:var(--muted); font-size:0.88rem; line-height:1.6; }
+  #custom-content-area { margin-top:2rem; }
+`;
+
+function initEditor(){
+  // inject CSS
+  const style = document.createElement('style');
+  style.textContent = EDITOR_CSS;
+  document.head.appendChild(style);
+
+  // FAB button
+  const fab = document.createElement('button');
+  fab.id = 'editor-fab';
+  fab.title = 'Редагувати сайт';
+  fab.innerHTML = '✏️';
+  fab.onclick = toggleEditor;
+  document.body.appendChild(fab);
+
+  // Toast
+  const toast = document.createElement('div');
+  toast.id = 'e-toast';
+  toast.className = 'e-toast';
+  document.body.appendChild(toast);
+
+  // Panel
+  const panel = document.createElement('div');
+  panel.id = 'editor-panel';
+  panel.innerHTML = `
+    <div id="editor-header">
+      <h3>✏️ РЕДАКТОР САЙТУ</h3>
+      <button id="editor-close" onclick="toggleEditor()">✕</button>
+    </div>
+    <div id="editor-body">
+
+      <div class="e-section">
+        <div class="e-label">Назва сайту (логотип)</div>
+        <input class="e-input" id="e-logo" placeholder="CYBERSPORT">
+        <button class="e-btn" onclick="applyLogo()">Застосувати назву</button>
+      </div>
+
+      <div class="e-divider"></div>
+
+      <div class="e-section">
+        <div class="e-label">Головний заголовок (Hero)</div>
+        <input class="e-input" id="e-h1-line1" placeholder="Рядок 1 (напр. КІБЕР)">
+        <input class="e-input" id="e-h1-line2" placeholder="Рядок 2 (напр. СПОРТ)">
+        <input class="e-input" id="e-h1-line3" placeholder="Рядок 3 (підзаголовок)">
+        <button class="e-btn" onclick="applyHero()">Застосувати заголовок</button>
+      </div>
+
+      <div class="e-divider"></div>
+
+      <div class="e-section">
+        <div class="e-label">Статистики на головній</div>
+        <input class="e-input" id="e-s1v" placeholder="Значення 1 (напр. $1.8B)">
+        <input class="e-input" id="e-s1l" placeholder="Підпис 1 (напр. Ринок 2024)">
+        <input class="e-input" id="e-s2v" placeholder="Значення 2">
+        <input class="e-input" id="e-s2l" placeholder="Підпис 2">
+        <input class="e-input" id="e-s3v" placeholder="Значення 3">
+        <input class="e-input" id="e-s3l" placeholder="Підпис 3">
+        <input class="e-input" id="e-s4v" placeholder="Значення 4">
+        <input class="e-input" id="e-s4l" placeholder="Підпис 4">
+        <button class="e-btn" onclick="applyStats()">Застосувати статистики</button>
+      </div>
+
+      <div class="e-divider"></div>
+
+      <div class="e-section">
+        <div class="e-label">Колір акценту</div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem">
+          <button class="e-btn-outline" onclick="setColor('#e8000a')" style="flex:1">🔴 Червоний</button>
+          <button class="e-btn-outline" onclick="setColor('#00f0ff')" style="flex:1">🔵 Кіберпанк</button>
+          <button class="e-btn-outline" onclick="setColor('#ff8c00')" style="flex:1">🟠 Помаранч</button>
+          <button class="e-btn-outline" onclick="setColor('#00e676')" style="flex:1">🟢 Зелений</button>
+          <button class="e-btn-outline" onclick="setColor('#b700ff')" style="flex:1">🟣 Фіолет</button>
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <input type="color" id="e-custom-color" value="#e8000a" style="width:44px;height:36px;border:1px solid rgba(232,0,10,0.3);background:none;cursor:pointer;padding:2px">
+          <button class="e-btn-outline" style="flex:1" onclick="setColor(document.getElementById('e-custom-color').value)">Свій колір</button>
+        </div>
+      </div>
+
+      <div class="e-divider"></div>
+
+      <div class="e-section">
+        <div class="e-label">Додати свій блок контенту</div>
+        <select class="e-select" id="e-block-page">
+          <option value="what">Сторінка «Що таке»</option>
+          <option value="history">Сторінка «Історія»</option>
+          <option value="analysis">Сторінка «Аналіз»</option>
+          <option value="ukraine">Сторінка «Україна»</option>
+          <option value="about">Сторінка «Про галузь»</option>
+        </select>
+        <input class="e-input" id="e-block-title" placeholder="Заголовок блоку">
+        <textarea class="e-textarea" id="e-block-text" placeholder="Текст (можна кілька рядків)"></textarea>
+        <button class="e-btn" onclick="addBlock()">➕ Додати блок</button>
+      </div>
+
+      <div class="e-divider"></div>
+
+      <div class="e-section">
+        <div class="e-label">Текст підвалу (footer)</div>
+        <input class="e-input" id="e-footer" placeholder="© 2025 Мій проект">
+        <button class="e-btn" onclick="applyFooter()">Застосувати підвал</button>
+      </div>
+
+      <div class="e-divider"></div>
+
+      <div class="e-section">
+        <div class="e-label">Керування</div>
+        <button class="e-btn-outline" onclick="saveToLocal()">💾 Зберегти зміни (локально)</button>
+        <button class="e-btn-outline" onclick="loadFromLocal()">📂 Відновити збережене</button>
+        <button class="e-btn-outline" onclick="resetAll()" style="color:#ff6670;border-color:rgba(232,0,10,0.3)">🗑️ Скинути всі зміни</button>
+      </div>
+
+    </div>
+  `;
+  document.body.appendChild(panel);
+}
+
+function toggleEditor(){
+  const p = document.getElementById('editor-panel');
+  p.classList.toggle('open');
+  loadEditorValues();
+}
+
+function showToast(msg){
+  const t = document.getElementById('e-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function loadEditorValues(){
+  // logo
+  const logoEl = document.querySelector('.logo');
+  if(logoEl) document.getElementById('e-logo').value = logoEl.textContent;
+  // stats
+  const nums = document.querySelectorAll('.hero-stat .num');
+  const lbls = document.querySelectorAll('.hero-stat .lbl');
+  ['s1v','s2v','s3v','s4v'].forEach((id,i)=>{
+    const el = document.getElementById('e-'+id);
+    if(el && nums[i]) el.value = nums[i].textContent;
+  });
+  ['s1l','s2l','s3l','s4l'].forEach((id,i)=>{
+    const el = document.getElementById('e-'+id);
+    if(el && lbls[i]) el.value = lbls[i].textContent;
+  });
+}
+
+function applyLogo(){
+  const val = document.getElementById('e-logo').value.trim();
+  if(!val) return;
+  const logoEl = document.querySelector('.logo');
+  if(logoEl){
+    const parts = val.split(/\s+/);
+    if(parts.length>1){
+      logoEl.innerHTML = parts.slice(0,-1).join(' ')+'<em></em><span>'+parts[parts.length-1]+'</span>';
+    } else {
+      logoEl.innerHTML = '<span>'+val+'</span>';
+    }
+  }
+  showToast('✅ Назву оновлено');
+}
+
+function applyHero(){
+  const l1 = document.getElementById('e-h1-line1').value;
+  const l2 = document.getElementById('e-h1-line2').value;
+  const l3 = document.getElementById('e-h1-line3').value;
+  const h1 = document.querySelector('.hero h1');
+  if(h1){
+    if(l1) h1.querySelector('.line1').textContent = l1;
+    if(l2) h1.querySelector('.line2').textContent = l2;
+    if(l3) h1.querySelector('.line3').textContent = l3;
+  }
+  showToast('✅ Заголовок оновлено');
+}
+
+function applyStats(){
+  const nums = document.querySelectorAll('.hero-stat .num');
+  const lbls = document.querySelectorAll('.hero-stat .lbl');
+  [['s1v','s2v','s3v','s4v'],['s1l','s2l','s3l','s4l']].forEach((ids,gi)=>{
+    ids.forEach((id,i)=>{
+      const val = document.getElementById('e-'+id).value.trim();
+      const target = gi===0 ? nums[i] : lbls[i];
+      if(val && target) target.textContent = val;
+    });
+  });
+  showToast('✅ Статистики оновлено');
+}
+
+function setColor(hex){
+  document.documentElement.style.setProperty('--red', hex);
+  // derive red2 (lighter)
+  document.documentElement.style.setProperty('--red2', hex);
+  document.documentElement.style.setProperty('--border', hex+'33');
+  showToast('🎨 Колір змінено');
+}
+
+function addBlock(){
+  const page  = document.getElementById('e-block-page').value;
+  const title = document.getElementById('e-block-title').value.trim();
+  const text  = document.getElementById('e-block-text').value.trim();
+  if(!title && !text){ showToast('⚠️ Введіть заголовок або текст'); return; }
+
+  const pageEl = document.getElementById('page-'+page);
+  if(!pageEl){ showToast('❌ Сторінку не знайдено'); return; }
+
+  let area = pageEl.querySelector('#custom-content-area');
+  if(!area){
+    area = document.createElement('div');
+    area.id = 'custom-content-area';
+    const section = pageEl.querySelector('.section');
+    if(section) section.appendChild(area);
+    else pageEl.appendChild(area);
+  }
+
+  const id = 'block-' + Date.now();
+  const block = document.createElement('div');
+  block.className = 'custom-block';
+  block.id = id;
+  block.innerHTML = `
+    <button class="del-btn" onclick="document.getElementById('${id}').remove();showToast('🗑️ Блок видалено')">✕ Видалити</button>
+    ${title ? `<h4>${title}</h4>` : ''}
+    ${text  ? `<p>${text.replace(/\n/g,'<br>')}</p>` : ''}
+  `;
+  area.appendChild(block);
+
+  document.getElementById('e-block-title').value = '';
+  document.getElementById('e-block-text').value  = '';
+  showToast('✅ Блок додано на сторінку «'+page+'»');
+}
+
+function applyFooter(){
+  const val = document.getElementById('e-footer').value.trim();
+  if(!val) return;
+  const footer = document.querySelector('footer p');
+  if(footer) footer.innerHTML = val;
+  showToast('✅ Підвал оновлено');
+}
+
+function saveToLocal(){
+  const data = {
+    logo: document.querySelector('.logo')?.innerHTML,
+    h1l1: document.querySelector('.line1')?.textContent,
+    h1l2: document.querySelector('.line2')?.textContent,
+    h1l3: document.querySelector('.line3')?.textContent,
+    stats: [...document.querySelectorAll('.hero-stat')].map(s=>({
+      num: s.querySelector('.num')?.textContent,
+      lbl: s.querySelector('.lbl')?.textContent,
+    })),
+    color: getComputedStyle(document.documentElement).getPropertyValue('--red').trim(),
+    footer: document.querySelector('footer p')?.innerHTML,
+    blocks: [...document.querySelectorAll('.custom-block')].map(b=>({
+      page: b.closest('.page')?.id?.replace('page-',''),
+      html: b.innerHTML,
+      id: b.id,
+    })),
+  };
+  localStorage.setItem('cybersite_data', JSON.stringify(data));
+  showToast('💾 Збережено в браузері');
+}
+
+function loadFromLocal(){
+  const raw = localStorage.getItem('cybersite_data');
+  if(!raw){ showToast('📂 Збережених даних немає'); return; }
+  try {
+    const data = JSON.parse(raw);
+    if(data.logo){ const l=document.querySelector('.logo'); if(l) l.innerHTML=data.logo; }
+    if(data.h1l1){ const e=document.querySelector('.line1'); if(e) e.textContent=data.h1l1; }
+    if(data.h1l2){ const e=document.querySelector('.line2'); if(e) e.textContent=data.h1l2; }
+    if(data.h1l3){ const e=document.querySelector('.line3'); if(e) e.textContent=data.h1l3; }
+    if(data.color) setColor(data.color);
+    if(data.footer){ const f=document.querySelector('footer p'); if(f) f.innerHTML=data.footer; }
+    if(data.stats){
+      const nums=document.querySelectorAll('.hero-stat .num');
+      const lbls=document.querySelectorAll('.hero-stat .lbl');
+      data.stats.forEach((s,i)=>{
+        if(nums[i] && s.num) nums[i].textContent=s.num;
+        if(lbls[i] && s.lbl) lbls[i].textContent=s.lbl;
+      });
+    }
+    if(data.blocks){
+      data.blocks.forEach(b=>{
+        const pageEl=document.getElementById('page-'+b.page);
+        if(!pageEl) return;
+        let area=pageEl.querySelector('#custom-content-area');
+        if(!area){
+          area=document.createElement('div');
+          area.id='custom-content-area';
+          const sec=pageEl.querySelector('.section');
+          if(sec) sec.appendChild(area); else pageEl.appendChild(area);
+        }
+        const block=document.createElement('div');
+        block.className='custom-block'; block.id=b.id;
+        block.innerHTML=b.html;
+        area.appendChild(block);
+      });
+    }
+    showToast('📂 Відновлено збережені дані');
+  } catch(e){ showToast('❌ Помилка відновлення'); }
+}
+
+function resetAll(){
+  if(!confirm('Скинути всі ваші зміни?')) return;
+  localStorage.removeItem('cybersite_data');
+  location.reload();
+}
+
+// Init on load
+window.addEventListener('DOMContentLoaded', ()=>{
+  initEditor();
+});
+</script>
+</body>
+</html>
